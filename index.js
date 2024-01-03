@@ -2,7 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const UserModel = require('./models/usermodel');
+const News = require('./models/newsModel')
+const NewsStation = require('./models/newsStation')
+const Search = require('./models/searchSchema')
 const app = express();
+const PORT = 3000;
 app.use(bodyParser.json());
 mongoose.connect('mongodb://127.0.0.1:27017/ethiopian-news-hub');
 
@@ -63,7 +67,68 @@ app.post('/login', async (req, res) => {
     return autoSave({ username, password }, res, 'login');
 });
 
-const port = 5000;
-app.listen(port, () => {
-    console.log(`server running on port ${port}`);
-});
+app.post('/newsstation', async (req, res) => {
+    try {
+      const { stationId, stationName, socialMediaLinks } = req.body;
+  
+      const newsStation = new NewsStation({
+        stationId,
+        stationName,
+        socialMediaLinks,
+      });
+  
+      await newsStation.save();
+  
+      res.json(newsStation);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  // API endpoint to create a News
+  app.post('/news', async (req, res) => {
+    try {
+      const { newsId, title, news, source } = req.body;
+  
+      const newsArticle = new News({
+        newsId,
+        title,
+        news,
+        source,
+      });
+  
+      await newsArticle.save();
+  
+      res.json(newsArticle);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  // API endpoint to create a Search with references to News and NewsStation
+  app.get('/search', async (req, res) => {
+    try {
+      const { userId, user, stationId, newsId } = req.body;
+  
+      const search = new Search({
+        userId,
+        user,
+        stationId,
+        news: newsId,
+      });
+  
+      await search.save();
+  
+      res.json(search);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+  // Start the server
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
