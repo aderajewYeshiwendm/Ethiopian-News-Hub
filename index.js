@@ -1,15 +1,54 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
 const UserModel = require('./models/usermodel');
 const News = require('./models/newsModel')
 const NewsStation = require('./models/newsStation')
 const Search = require('./models/searchSchema')
+require('dotenv').config()
 const app = express();
 const PORT = 3000;
 app.use(bodyParser.json());
 mongoose.connect('mongodb://127.0.0.1:27017/ethiopian-news-hub');
+app.use(session({
+  secret: 'your-session-secret',
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
+passport.use(
+  new GoogleStrategy(
+      {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: process.env.GOOGLE_CALLBACK_URL,
+          scope: ["profile", "email"],
+      },
+      (accessToken, refreshToken, profile, done) => {
+          // Handle user profile data and save/update user in your database
+          const user = {
+              name: profile.displayName,
+              email: profile.emails[0].value,
+              googleId: profile.id,
+          };
+          return done(null, user);
+      }
+  )
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
 // Function to Check email format
 function CheckEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,7 +56,7 @@ function CheckEmail(email) {
 }
 
 // Function to handle authentication and user data saving
-async function autoSave({ name,age,gender,address, username, email, password }, res, action) {
+async function autoSave({ name,age,gender,address, username, email, password, googleId }, res, action) {
     try {
 
         // Check if email is already registered during register
@@ -30,15 +69,17 @@ async function autoSave({ name,age,gender,address, username, email, password }, 
 
         // Check if user exists during login
         if (action === 'login') {
-            const user = await UserModel.findOne({ username, password });
+            const user = await UserModel.findOne({$or: [{ username, password }, { email }, { googleId }],});
             if (!user && user.username !== username && user.password !== password) {
                 return res.status(401).json({ success: false, message: 'Invalid credentials' });
             }
         }
 
         // Create new user during register
-        if (action === 'register') {
-            const newUser = await UserModel.create({ name,age,gender,address,username, email, password });
+        if (action === 'register' || action == 'google') {
+          const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
+
+            const newUser = await UserModel.create({ name,age,gender,address,username, email, password: hashedPassword,googleId });
             // Check email format
         if (!CheckEmail(email)) {
             return res.status(400).json({ success: false, message: 'Invalid email format' });
@@ -66,7 +107,15 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     return autoSave({ username, password }, res, 'login');
 });
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
+app.get(
+    '/auth/google/callback',
+    passport.authenticate('google', {
+        successRedirect: 'http://localhost:3000/auth/google/callback',
+        failureRedirect: 'http://localhost:3000/auth/google/callback',
+    })
+);
 app.post('/newsstation', async (req, res) => {
     try {
       const { stationId, stationName, socialMediaLinks } = req.body;
