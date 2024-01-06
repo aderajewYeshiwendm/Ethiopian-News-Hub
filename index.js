@@ -30,15 +30,25 @@ passport.use(
           callbackURL: process.env.GOOGLE_CALLBACK_URL,
           scope: ["profile", "email"],
       },
-      (accessToken, refreshToken, profile, done) => {
-          // Handle user profile data and save/update user in your database
-          const user = {
+      async (accessToken, refreshToken, profile, done) => {
+        console.log("Google Authentication Response:", { accessToken, refreshToken, profile });
+
+        try{
+          const existingUser = await UserModel.findOne({ googleId: profile.id});
+          if(existingUser){
+            return done(null,existingUser);
+          }
+        
+          const newUser = await UserModel.create({
               name: profile.displayName,
               email: profile.emails[0].value,
               googleId: profile.id,
-          };
-          return done(null, user);
+          });
+          return done(null, newUser);
+      }catch(error){
+        return done(error,null);
       }
+    }
   )
 );
 
@@ -77,6 +87,9 @@ async function autoSave({ name,age,gender,address, username, email, password, go
 
         // Create new user during register
         if (action === 'register' || action == 'google') {
+          if (action === 'register' && (!password || !username)) {
+            return res.status(400).json({ success: false, message: 'Password and username are required for registration' });
+          }
           const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
 
             const newUser = await UserModel.create({ name,age,gender,address,username, email, password: hashedPassword,googleId });
@@ -112,8 +125,8 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 app.get(
     '/auth/google/callback',
     passport.authenticate('google', {
-        successRedirect: 'http://localhost:3000/auth/google/callback',
-        failureRedirect: 'http://localhost:3000/auth/google/callback',
+        successRedirect:'http://localhost:3000/auth/google/callback' ,
+        failureRedirect: 'http://localhost:3000',
     })
 );
 app.post('/newsstation', async (req, res) => {
