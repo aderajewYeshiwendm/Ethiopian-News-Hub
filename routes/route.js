@@ -1,4 +1,3 @@
-// routes/router.js
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
@@ -69,7 +68,7 @@ passport.use(
   
           // Check if user exists during login
           if (action === 'login') {
-              const user = await UserModel.findOne({$or: [{ username, password }, { email }, { googleId }],});
+              const user = await UserModel.findOne({ username,password,email });
               if (!user && user.username !== username && user.password !== password) {
                   return res.status(401).json({ success: false, message: 'Invalid credentials' });
               }
@@ -95,7 +94,7 @@ passport.use(
               return res.json({ success: true, message: 'Login successful' });
           }
       } catch (error) {
-          return res.status(500).json({ success: false, message: `Error ${action} user`, error: error.message });
+          return res.status(401).json({"message": "Invalid credentials", "success": false});
       }
   }
   
@@ -265,3 +264,4 @@ passport.use(
     });
 
 module.exports = router;
+module.exports = { CheckEmail, autoSave };
