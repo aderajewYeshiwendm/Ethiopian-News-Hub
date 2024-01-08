@@ -3,11 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const newsStationSchema = new Schema({
-  stationId: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
+  
   stationName: {
     type: String,
     required: true,
