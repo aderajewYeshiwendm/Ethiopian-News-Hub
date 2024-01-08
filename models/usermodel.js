@@ -4,10 +4,10 @@ const UserSchema = new mongoose.Schema({
     age:{type: Number, required:false,},
     address:{type: String, required:false,},
     gender:{type: String, required:false,},
-    email:{type: String, required:true,},
-    username:{type: String, required:false,},
-    password:{type: String, required:false,},
-    googleId:String,
+    email:{type: String, required:true},
+    username:{type: String, required:true},
+    password:{type: String, required:true},
+    googleId:{type:String, required:false}
 });
 const UserModel = mongoose.model('users',UserSchema)
 module.exports = UserModel;

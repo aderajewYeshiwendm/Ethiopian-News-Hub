@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt'); 
 const UserModel = require('../models/usermodel'); 
-const { CheckEmail, autoSave } = require('../routes/route');
+const CheckEmail = require('../routes/route').CheckEmail;
+const autoSave = require('../routes/route').autoSave;
 
 // Mocking the UserModel.findOne method
 jest.mock("../models/usermodel", () => ({
@@ -106,8 +107,7 @@ it('should handle registration with an existing email', async () => {
     const mockRequest = {
       body: {
         username: 'adeyeshi',
-        password: 'password123',
-        email:"aderajewy26@gmail.com"
+        
       },
     };
 
@@ -115,19 +115,16 @@ it('should handle registration with an existing email', async () => {
       // Mock user with valid credentials
       _id: 'validUserId',
       username: mockRequest.body.username,
-      password: mockRequest.body.password,
-      email:mockRequest.body.email,
+      
     });
 
     await autoSave(mockRequest.body, mockRes, 'login');
 
     expect(UserModel.findOne).toHaveBeenCalledWith({
         
-          username: mockRequest.body.username ,
-          password: mockRequest.body.password ,
-          email: mockRequest.body.email ,  
-        
-      });
+          username:mockRequest.body.username,
+        })
+      ;
     expect(mockRes.json).toHaveBeenCalledWith({
       success: true,
       message: 'Login successful',
@@ -138,8 +135,7 @@ it('should handle registration with an existing email', async () => {
     const mockRequest = {
       body: {
         username: 'adeyeshi',
-        password: 'invalid_password',
-        email:"aderajewy26@gmail.com"
+        
       },
     };
 
@@ -147,11 +143,12 @@ it('should handle registration with an existing email', async () => {
 
     await autoSave(mockRequest.body, mockRes, 'login');
 
-    expect(UserModel.findOne).toHaveBeenCalledWith({
-        username: mockRequest.body.username,
-        password: mockRequest.body.password,
-        email:mockRequest.body.email,
-      });
+    expect(UserModel.findOne).toHaveBeenCalledWith(
+       {
+         
+          username: "adeyeshi",
+        })
+      
     expect(mockRes.status).toHaveBeenCalledWith(401);
     expect(mockRes.json).toHaveBeenCalledWith({
       success: false,

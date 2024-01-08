@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const newsRoutes = require('./routes/route');
+const router = require('./routes/route').router;
 const path = require('path');
 const app = express();
 const PORT = 3000;
@@ -19,7 +19,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', newsRoutes);
+app.use('/', router);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the News API');

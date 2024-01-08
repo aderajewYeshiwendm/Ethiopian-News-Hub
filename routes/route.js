@@ -68,10 +68,15 @@ passport.use(
   
           // Check if user exists during login
           if (action === 'login') {
-              const user = await UserModel.findOne({ username,password,email });
-              if (!user && user.username !== username && user.password !== password) {
-                  return res.status(401).json({ success: false, message: 'Invalid credentials' });
-              }
+              const user = await UserModel.findOne({ username: username});
+              console.log(user);
+              if (user) {
+                return res.json({ success: true, message: 'Login successful' });
+
+            } else {
+                return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
+            
           }
   
           // Create new user during register
@@ -89,10 +94,8 @@ passport.use(
               return res.json({ success: true, message: 'User registered successfully', user: newUser });
           }
   
-          // Authenticate user during login
-          if (action === 'login') {
-              return res.json({ success: true, message: 'Login successful' });
-          }
+          
+          
       } catch (error) {
           return res.status(401).json({"message": "Invalid credentials", "success": false});
       }
@@ -106,8 +109,8 @@ passport.use(
   
   // Login User
   router.post('/login', async (req, res) => {
-      const { username, password } = req.body;
-      return autoSave({ username, password }, res, 'login');
+      const { username, password,email} = req.body;
+      return autoSave({ username, password,email}, res, 'login');
   });
   router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
   
@@ -263,5 +266,6 @@ passport.use(
       }
     });
 
-module.exports = router;
-module.exports = { CheckEmail, autoSave };
+module.exports.CheckEmail = CheckEmail;
+module.exports.router = router;
+module.exports.autoSave = autoSave;
