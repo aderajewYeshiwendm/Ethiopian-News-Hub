@@ -80,7 +80,7 @@ passport.use(
           }
   
           // Create new user during register
-          if (action === 'register' || action == 'google') {
+          if (action === 'register') {
             if (action === 'register' && (!password || !username)) {
               return res.status(400).json({ success: false, message: 'Password and username are required for registration' });
             }
@@ -93,7 +93,12 @@ passport.use(
           }
               return res.json({ success: true, message: 'User registered successfully', user: newUser });
           }
-  
+          if (action === 'google') {
+            const username = generateUniqueUsername(user.email); 
+            const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
+
+            await UserModel.create({ ...user, username,password:hashedPassword });
+        }
           
           
       } catch (error) {
