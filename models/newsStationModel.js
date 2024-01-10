@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const newsStationSchema = new Schema({
-  
+  stationId: { type: mongoose.Schema.Types.ObjectId, auto: true },
+
   stationName: {
     type: String,
     required: true,
@@ -12,6 +13,7 @@ const newsStationSchema = new Schema({
     type: Map,
     of: String,
   },
+  createdAt: { type: Date, default: Date.now },
   newsSegments: [{
     type: Schema.Types.ObjectId,
     ref: 'NewsSegment',

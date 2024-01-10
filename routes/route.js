@@ -55,7 +55,7 @@ passport.use(
   }
   
   // Function to handle authentication and user data saving
-  async function autoSave({ name,age,gender,address, username, email, password, googleId }, res, action) {
+  async function autoSave({ name,age,gender,address, username, email, password, googleId,role }, res, action) {
       try {
   
           // Check if email is already registered during register
@@ -69,24 +69,31 @@ passport.use(
           // Check if user exists during login
           if (action === 'login') {
               const user = await UserModel.findOne({ username: username});
-              console.log(user);
               if (user) {
-                return res.json({ success: true, message: 'Login successful' });
-
+                if (user.role === 'admin') {
+                  // Redirect the admin to the CRUD page
+                  return res.json({
+                      success: true,
+                      message: 'Login successful',
+                      redirectUrl: '/admin/crud', // to the CRUD page
+                  });
+              } else {
+                  // For regular users 
+                  return res.json({ success: true, message: 'Login successful' });
+              }
             } else {
                 return res.status(401).json({ success: false, message: 'Invalid credentials' });
             }
             
-          }
   
-          // Create new user during register
+      } 
           if (action === 'register') {
             if (action === 'register' && (!password || !username)) {
               return res.status(400).json({ success: false, message: 'Password and username are required for registration' });
             }
             const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
   
-              const newUser = await UserModel.create({ name,age,gender,address,username, email, password: hashedPassword,googleId });
+              const newUser = await UserModel.create({ name,age,gender,address,username, email, password: hashedPassword,googleId,role });
               // Check email format
           if (!CheckEmail(email)) {
               return res.status(400).json({ success: false, message: 'Invalid email format' });
@@ -106,13 +113,11 @@ passport.use(
       }
   }
   
-  // register User
   router.post('/register', async (req, res) => {
-      const { name,age,address,gender, username, email, password } = req.body;
-      return autoSave({ name,age,address,gender, username, email, password }, res, 'register');
+      const { name,age,address,gender, username, email, password,role } = req.body;
+      return autoSave({ name,age,address,gender, username, email, password,role }, res, 'register');
   });
   
-  // Login User
   router.post('/login', async (req, res) => {
       const { username, password,email} = req.body;
       return autoSave({ username, password,email}, res, 'login');
@@ -145,17 +150,16 @@ passport.use(
       }
     });
     
-    // API endpoint to create a News
     router.post('/news', async (req, res) => {
       try {
         const { title, news, source } = req.body;
-    
         const newsArticle = new News({
         
           title,
           news,
           source,
         });
+        
     
         await newsArticle.save();
     
@@ -165,6 +169,59 @@ passport.use(
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    router.get('/news', async (req, res) => {
+      try {
+          const newsArticles = await News.find();
+          res.json(newsArticles);
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal Server Error' });
+      }
+  });
+router.get('/news/:title', async (req, res) => {
+  try {
+      const { title } = req.params;
+
+      if (!title) {
+          return res.status(400).json({ error: 'Title parameter is required for retrieving news by title' });
+      }
+
+      const newsArticle = await News.findOne({ title });
+
+      if (newsArticle) {
+          res.json(newsArticle);
+      } else {
+          res.status(404).json({ error: 'News not found' });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+router.get('/news/createdAt/past-two-days', async (req, res) => {
+  try {
+      const currentDate = new Date();
+
+      const startDate = new Date(currentDate);
+      startDate.setUTCDate(currentDate.getUTCDate() - 2);
+      startDate.setUTCHours(0, 0, 0, 0);
+
+      const endDate = new Date();
+      
+      const newsArticles = await News.find({
+          createdAt: { $gte: startDate, $lt: endDate }
+      });
+
+      if (newsArticles.length > 0) {
+          res.json(newsArticles);
+      } else {
+          res.status(404).json({ error: 'No news articles created in the past two days' });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
     router.post('/sportnews', async (req, res) => {
       try {
         const { title, news, source } = req.body;
@@ -183,6 +240,60 @@ passport.use(
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
+    router.get("/sportnews", async (req, res) => {
+      try {
+          const newsArticles = await SportNews.find();
+          res.json(newsArticles);
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal Server Error' });
+      }
+  });
+  router.get('/sportnews/:title', async (req, res) => {
+    try {
+        const { title } = req.params;
+  
+        if (!title) {
+            return res.status(400).json({ error: 'Title parameter is required for retrieving news by title' });
+        }
+  
+        const newsArticle = await SportNews.findOne({ title });
+  
+        if (newsArticle) {
+            res.json(newsArticle);
+        } else {
+            res.status(404).json({ error: 'News not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  router.get('/sportnews/createdAt/past-two-days', async (req, res) => {
+    try {
+        const currentDate = new Date();
+  
+        const startDate = new Date(currentDate);
+        startDate.setUTCDate(currentDate.getUTCDate() - 2);
+        startDate.setUTCHours(0, 0, 0, 0);
+  
+        const endDate = new Date();
+        
+  
+        const newsArticles = await SportNews.find({
+            createdAt: { $gte: startDate, $lt: endDate }
+        });
+  
+        if (newsArticles.length > 0) {
+            res.json(newsArticles);
+        } else {
+            res.status(404).json({ error: 'No news articles created in the past two days' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
     router.post('/businessnews', async (req, res) => {
       try {
         const { title, news, source } = req.body;
@@ -200,6 +311,50 @@ passport.use(
       } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+    router.get('/businessnews/:title', async (req, res) => {
+      try {
+          const { title } = req.params;
+    
+          if (!title) {
+              return res.status(400).json({ error: 'Title parameter is required for retrieving news by title' });
+          }
+    
+          const newsArticle = await BusinessNews.findOne({ title });
+    
+          if (newsArticle) {
+              res.json(newsArticle);
+          } else {
+              res.status(404).json({ error: 'News not found' });
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+    router.get('/businessnews/createdAt/past-two-days', async (req, res) => {
+      try {
+          const currentDate = new Date();
+    
+          const startDate = new Date(currentDate);
+          startDate.setUTCDate(currentDate.getUTCDate() - 2);
+          startDate.setUTCHours(0, 0, 0, 0);
+    
+          const endDate = new Date();
+    
+          const newsArticles = await BusinessNews.find({
+              createdAt: { $gte: startDate, $lt: endDate }
+          });
+    
+          if (newsArticles.length > 0) {
+              res.json(newsArticles);
+          } else {
+              res.status(404).json({ error: 'No news articles created in the past two days' });
+          }
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal Server Error' });
       }
     });
     router.post('/entertainmentnews', async (req, res) => {
@@ -221,55 +376,59 @@ passport.use(
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
-      router.get('/searchnews', async (req, res) => {
-      const { title } = req.query;
-    
+    router.get("/entertainmentnews", async (req, res) => {
       try {
-        const searchResults = await News.find({ title: { $regex: new RegExp(title, 'i') } });
-    
-        return res.json({ success: true, results: searchResults });
+          const newsArticles = await EntertainmentNews.find();
+          res.json(newsArticles);
       } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, error: 'Internal Server Error' });
+          console.error(error);
+          res.status(500).json({ error: 'Internal Server Error' });
       }
-    });
-    router.get('/searchsport', async (req, res) => {
-      const { title } = req.query;
-    
-      try {
-        // Using a regular expression to perform a case-insensitive search
-        const searchResults = await SportNews.find({ title: { $regex: new RegExp(title, 'i') } });
-    
-        return res.json({ success: true, results: searchResults });
-      } catch (error) {
+  });
+  router.get('/entertainmentnews/:title', async (req, res) => {
+    try {
+        const { title } = req.params;
+  
+        if (!title) {
+            return res.status(400).json({ error: 'Title parameter is required for retrieving news by title' });
+        }
+  
+        const newsArticle = await EntertainmentNews.findOne({ title });
+  
+        if (newsArticle) {
+            res.json(newsArticle);
+        } else {
+            res.status(404).json({ error: 'News not found' });
+        }
+    } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, error: 'Internal Server Error' });
-      }
-    });
-    router.get('/searchbusiness', async (req, res) => {
-      const { title } = req.query;
-    
-      try {
-        const searchResults = await BusinessNews.find({ title: { $regex: new RegExp(title, 'i') } });
-    
-        return res.json({ success: true, results: searchResults });
-      } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  router.get('/entertainmentnews/createdAt/past-two-days', async (req, res) => {
+    try {
+        const currentDate = new Date();
+  
+        const startDate = new Date(currentDate);
+        startDate.setUTCDate(currentDate.getUTCDate() - 2);
+        startDate.setUTCHours(0, 0, 0, 0);
+  
+        const endDate = new Date();
+  
+        const newsArticles = await EntertainmentNews.find({
+            createdAt: { $gte: startDate, $lt: endDate }
+        });
+  
+        if (newsArticles.length > 0) {
+            res.json(newsArticles);
+        } else {
+            res.status(404).json({ error: 'No news articles created in the past two days' });
+        }
+    } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, error: 'Internal Server Error' });
-      }
-    });
-    router.get('/searchentertainment', async (req, res) => {
-      const { title } = req.query;
-    
-      try {
-        const searchResults = await EntertainmentNews.find({ title: { $regex: new RegExp(title, 'i') } });
-    
-        return res.json({ success: true, results: searchResults });
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({ success: false, error: 'Internal Server Error' });
-      }
-    });
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 module.exports.CheckEmail = CheckEmail;
 module.exports.router = router;
