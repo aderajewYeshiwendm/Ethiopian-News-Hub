@@ -7,12 +7,14 @@ const router = require('./routes/route').router;
 const path = require('path');
 const app = express();
 const PORT = 3000;
+require('dotenv').config()
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 mongoose.connect('mongodb://127.0.0.1:27017/ethiopian-news-hub');
 app.use(session({
-  secret: 'your-session-secret',
+  secret: process.env.secret,
   resave: false,
   saveUninitialized: true,
 }));
@@ -22,7 +24,7 @@ app.use(passport.session());
 app.use('/', router);
 
 app.get('/', (req, res) => {
-  res.send('Welcome to the News API');
+  res.send('/index.html');
 });
   
   
