@@ -1,0 +1,62 @@
+body {
+    background-image: url(../images/photo_2023-12-26_23-19-39.jpg);
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+}
+.news_artice_entry {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+}
+.news_entry_title {
+    color: #333;
+}
+.article_entry_form {
+    margin-top: 20px;
+}
+.article, .article_options, .article_link_entry, .submit_article {
+    margin-bottom: 20px;
+}
+.article_text {
+    display: block;
+    margin-bottom: 8px;
+}
+.article_textarea, .link_entry {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.article_radio_btn {
+    display: flex;
+    justify-content: space-around;
+}
+.submit_btn {
+    background-color: #06a4d9;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.submit_btn:hover {
+    background-color: #79cfeb;
+}
+@media only screen and (max-width: 600px) {
+    .news_artice_entry {
+        width: 90%;
+    }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles Page</title>
+    <link rel="stylesheet" href="../css/article_entry.css">
+</head>
+<body>
+<div class="news_artice_entry">
+    <h2 class="news_entry_title">Ethiopian News Hub</h2>
+    <form class="article_entry_form">
+        <div class="article">
+            <label class="article_text" for="article-text">Article Text:</label>
+            <textarea class="article_textarea" id="article-text" name="article-text" required></textarea>
+        </div>
+        <div class="article_options">
+            <label>Category:</label>
+            <div class="article_radio_btn">
+                <input type="radio" id="category-business" name="category" value="business" required>
+                <label for="category-business">Business</label>
+                <input type="radio" id="category-entertainment" name="category" value="entertainment" required>
+                <label for="category-entertainment">Entertainment</label>
+                <input type="radio" id="category-ethiopian-news" name="category" value="ethiopian_news" required>
+                <label for="category-ethiopian-news">Ethiopian News</label>
+                <input type="radio" id="category-sports" name="category" value="sports" required>
+                <label for="category-sports">Sports</label> 
+            </div>
+        </div>
+        <div class="article_link_entry">
+            <label for="article-link">Article Link:</label>
+            <input class="link_entry" type="url" id="article-link" name="article-link" required>
+        </div>
+        <div class="submit_article">
+            <button class="submit_btn" type="submit">Submit Article</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

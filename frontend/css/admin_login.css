@@ -1,0 +1,49 @@
+body {
+    background-image: url(../images/photo_2023-12-26_23-19-39.jpg);
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;    
+}
+.admin_login_container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}    
+.login_title {
+    color: #333;
+}
+.admin_login_form {
+    margin-top: 20px;
+}
+.admin_username_input, .admin_password_input {
+    margin-bottom: 15px;
+}
+.username_input, .password_input {
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.login_btn {
+    background-color: #06a4d9;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.login_btn:hover {
+    background-color: #79cfeb;
+}
+@media only screen and (max-width: 600px) {
+    .admin_login_container {
+        width: 80%;
+    }
+}
