@@ -1,145 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const News = require('../models/EthioNewsModel');
 const NewsStation = require('../models/newsStationModel');
-const UserModel = require('../models/usermodel');
 const SportNews = require('../models/SportModel')
 const EntertainmentNews = require('../models/EntertainmentModel')
 const BusinessNews = require('../models/BusinessModel')
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const bcrypt = require('bcrypt');
+const FeedbackModel = require('../models/FeedBackModel')
+const HostModel = require('../models/HostModel')
 require('dotenv').config()
-
-passport.use(
-    new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
-            scope: ["profile", "email"],
-        },
-        async (accessToken, refreshToken, profile, done) => {
-          console.log("Google Authentication Response:", { accessToken, refreshToken, profile });
-  
-          try{
-            const existingUser = await UserModel.findOne({ googleId: profile.id});
-            if(existingUser){
-              return done(null,existingUser);
-            }
-          
-            const newUser = await UserModel.create({
-                name: profile.displayName,
-                email: profile.emails[0].value,
-                googleId: profile.id,
-            });
-            return done(null, newUser);
-        }catch(error){
-          return done(error,null);
-        }
-      }
-    )
-  );
-  
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
-  
-  passport.deserializeUser((user, done) => {
-    done(null, user);
-  });
-  // Function to Check email format
-  function CheckEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-  }
-  
-  // Function to handle authentication and user data saving
-  async function autoSave({ name,age,gender,address, username, email, password, googleId,role }, res, action) {
-      try {
-  
-          // Check if email is already registered during register
-          if (action === 'register') {
-              const existingUser = await UserModel.findOne({ email });
-              if (existingUser) {
-                  return res.status(400).json({ success: false, message: 'Email already registered' });
-              }
-          }
-  
-          // Check if user exists during login
-          if (action === 'login') {
-              const user = await UserModel.findOne({ username: username});
-              if (user) {
-                if (email === 'adeyeshi294@gmail.com' && password === '12344') {
-                  user.role = 'admin';
-                }
-                if (user.role === 'admin') {
-                  console.log(user.role)
-                  return res.json({
-                    success: true,
-                    message: 'Login successful',
-                    redirectUrl: '/post.html', // Redirect to the post page for admin
-                  });
-              } else {
-                  // For regular users 
-                  return res.json({ success: true, message: 'Login successful' });
-              }
-            } else {
-                return res.status(401).json({ success: false, message: 'Invalid credentials' });
-            }
-            
-  
-      } 
-          if (action === 'register') {
-            if (action === 'register' && (!password || !username)) {
-              return res.status(400).json({ success: false, message: 'Password and username are required for registration' });
-            }
-            const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
-  
-              const newUser = await UserModel.create({ name,age,gender,address,username, email, password: hashedPassword,googleId,role });
-              // Check email format
-          if (!CheckEmail(email)) {
-              return res.status(400).json({ success: false, message: 'Invalid email format' });
-          }
-              return res.json({ success: true, message: 'User registered successfully', user: newUser });
-          }
-          if (action === 'google') {
-            const username = generateUniqueUsername(user.email); 
-            const hashedPassword = await bcrypt.hash(password, 10); // Adjust the saltRounds as needed
-
-            await UserModel.create({ ...user, username,password:hashedPassword });
-        }
-          
-          
-      } catch (error) {
-          return res.status(401).json({"message": "Invalid credentials", "success": false});
-      }
-  }
-  
-  router.post('/register', async (req, res) => {
-      const { name,age,address,gender, username, email, password,role } = req.body;
-      return autoSave({ name,age,address,gender, username, email, password,role }, res, 'register');
-  });
-  
-  router.post('/login', async (req, res) => {
-      const { username, password, email } = req.body;
-      const user = { username, password, email };
-    
-      if (email === 'adeyeshi294@gmail.com' && password === '12344') {
-        return autoSave({ ...user, role: 'admin' }, res, 'login');
-      } else {
-        return autoSave(user, res, 'login');
-      }
-  });
-  router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-  
-  router.get(
-      '/auth/google/callback',
-      passport.authenticate('google', {
-          successRedirect:'http://localhost:3000/index.html' ,
-          failureRedirect: 'http://localhost:3000/post.html',
-      })
-  );
   router.post('/newsstation', async (req, res) => {
       try {
         const { stationName, socialMediaLinks } = req.body;
@@ -438,7 +306,46 @@ router.get('/news/createdAt/past-two-days', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+  router.post('/feedback', async (req, res) => {
+    try {
+        const feedback = new FeedbackModel({ feedback: req.body.feedback });
+        await feedback.save();
+        res.status(201).json({ message: 'Feedback saved successfully' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+router.post('/host', async (req, res) => {
+  try {
+      const { hostName, password} = req.body;
+      const host = new HostModel({ hostName, password});
+      await host.save();
+      res.status(201).json({ message: 'Host created successfully' });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+});
 
-module.exports.CheckEmail = CheckEmail;
+// Express route to get host details
+router.get('/host/:id', async (req, res) => {
+  try {
+      const host = await HostModel.findById(req.params.id);
+      res.json(host);
+  } catch (error) {
+      res.status(404).json({ error: 'Host not found' });
+  }
+});
+
+// Express route to update host password
+router.put('/host/:id/password', async (req, res) => {
+  try {
+      const host = await HostModel.findById(req.params.id);
+      host.password = req.body.password;
+      await host.save();
+      res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+      res.status(404).json({ error: 'Host not found' });
+  }
+});
+
 module.exports.router = router;
-module.exports.autoSave = autoSave;
