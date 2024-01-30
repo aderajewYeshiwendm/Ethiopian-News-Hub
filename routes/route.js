@@ -1,31 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const News = require('../models/EthioNewsModel');
-const NewsStation = require('../models/newsStationModel');
 const SportNews = require('../models/SportModel')
 const EntertainmentNews = require('../models/EntertainmentModel')
 const BusinessNews = require('../models/BusinessModel')
 const FeedbackModel = require('../models/FeedBackModel')
 const HostModel = require('../models/HostModel')
 require('dotenv').config()
-  router.post('/newsstation', async (req, res) => {
-      try {
-        const { stationName, socialMediaLinks } = req.body;
-    
-        const newsStation = new NewsStation({
-        
-          stationName,
-          socialMediaLinks,
-        });
-    
-        await newsStation.save();
-    
-        res.json(newsStation);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
-    });
+  
     
     router.post('/news', async (req, res) => {
       try {
@@ -42,7 +24,7 @@ require('dotenv').config()
     
         res.json(newsArticle);
       } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
       }
     });
     router.get('/news', async (req, res) => {
@@ -50,8 +32,7 @@ require('dotenv').config()
           const newsArticles = await News.find();
           res.json(newsArticles);
       } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: 'Internal Server Error' });
+          return res.status(500).json({ error: 'Internal Server Error' });
       }
   });
 router.get('/news/:title', async (req, res) => {
@@ -70,8 +51,7 @@ router.get('/news/:title', async (req, res) => {
           res.status(404).json({ error: 'News not found' });
       }
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 router.get('/news/createdAt/past-two-days', async (req, res) => {

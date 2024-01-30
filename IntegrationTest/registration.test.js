@@ -5,6 +5,7 @@ const autoSave = require('../routes/registration').autoSave;
 jest.mock("../models/usermodel", () => ({
   findOne: jest.fn(),
   create: jest.fn(),
+  findOneAndUpdate: jest.fn(),
 }));
 
 // Mocking the bcrypt.hash method
@@ -151,6 +152,36 @@ it('should handle registration with an existing email', async () => {
     expect(mockRes.json).toHaveBeenCalledWith({
       success: false,
       message: 'Invalid credentials',
+    });
+  });
+  it('should handle updating user account', async () => {
+    // Mocking request data
+    const mockRequest = {
+      body: {
+        name: 'Updated Name',
+        age: 25,
+        gender: 'Female',
+        address: 'Updated Address',
+        username: 'updatedUsername',
+        email: 'helo@gmail.com',
+      },
+    };
+
+    // Mocking database response
+    UserModel.findOneAndUpdate.mockResolvedValue(null);
+
+    // Calling autoSave function with action 'update'
+    await autoSave(mockRequest.body, mockRes, 'update');
+
+    // Assertions...
+  
+    expect(UserModel.findOneAndUpdate).toHaveBeenCalledWith(
+      { email: mockRequest.body.email },
+      { name: 'Updated Name', age: 25, gender: 'Female', address: 'Updated Address', username: 'updatedUsername' }
+    );
+    expect(mockRes.json).toHaveBeenCalledWith({
+      success: true,
+      message: 'User account updated successfully',
     });
   });
 });
