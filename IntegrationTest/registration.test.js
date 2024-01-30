@@ -1,9 +1,7 @@
 const bcrypt = require('bcrypt'); 
 const UserModel = require('../models/usermodel'); 
-const CheckEmail = require('../routes/route').CheckEmail;
-const autoSave = require('../routes/route').autoSave;
-
-// Mocking the UserModel.findOne method
+const CheckEmail = require('../routes/registration').CheckEmail;
+const autoSave = require('../routes/registration').autoSave;
 jest.mock("../models/usermodel", () => ({
   findOne: jest.fn(),
   create: jest.fn(),
@@ -156,3 +154,5 @@ it('should handle registration with an existing email', async () => {
     });
   });
 });
+
+

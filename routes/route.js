@@ -42,7 +42,6 @@ require('dotenv').config()
     
         res.json(newsArticle);
       } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
