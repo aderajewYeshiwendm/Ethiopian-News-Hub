@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const router = require('./routes/route').router;
+const router = require('./routes/reaction').router;
+const root = require('./routes/registration').router;
+const rooter = require('./routes/route').router;
 const path = require('path');
 const app = express();
 const PORT = 3000;
@@ -22,6 +24,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', router);
+app.use('/', root);
+app.use('/', rooter);
 
 app.get('/', (req, res) => {
   res.send('/index.html');
