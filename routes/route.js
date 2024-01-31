@@ -7,16 +7,15 @@ const BusinessNews = require('../models/BusinessModel')
 const FeedbackModel = require('../models/FeedBackModel')
 const HostModel = require('../models/HostModel')
 require('dotenv').config()
-  
-    
     router.post('/news', async (req, res) => {
       try {
-        const { title, news, source } = req.body;
+        const { title, news, source,article } = req.body;
         const newsArticle = new News({
         
           title,
           news,
           source,
+          article,
         });
         
     
@@ -67,7 +66,6 @@ router.get('/news/createdAt/past-two-days', async (req, res) => {
       const newsArticles = await News.find({
           createdAt: { $gte: startDate, $lt: endDate }
       });
-
       if (newsArticles.length > 0) {
           res.json(newsArticles);
       } else {
@@ -80,12 +78,13 @@ router.get('/news/createdAt/past-two-days', async (req, res) => {
 });
     router.post('/sportnews', async (req, res) => {
       try {
-        const { title, news, source } = req.body;
+        const { title, news, source,article } = req.body;
     
         const newsArticle = new SportNews({
           title,
           news,
           source,
+          article,
         });
     
         await newsArticle.save();
@@ -152,13 +151,14 @@ router.get('/news/createdAt/past-two-days', async (req, res) => {
   });
     router.post('/businessnews', async (req, res) => {
       try {
-        const { title, news, source } = req.body;
+        const { title, news, source,article } = req.body;
     
         const newsArticle = new BusinessNews({
       
           title,
           news,
           source,
+          article,
         });
     
         await newsArticle.save();
@@ -215,13 +215,14 @@ router.get('/news/createdAt/past-two-days', async (req, res) => {
     });
     router.post('/entertainmentnews', async (req, res) => {
       try {
-        const { title, news, source } = req.body;
+        const { title, news, source,article } = req.body;
     
         const newsArticle = new EntertainmentNews({
         
           title,
           news,
           source,
+          article,
         });
     
         await newsArticle.save();

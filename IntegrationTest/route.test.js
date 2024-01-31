@@ -21,6 +21,7 @@ describe('Integration tests for routes', () => {
         _id: '60b7e8d2a08cf558e04966e4', // Mocked ObjectId
         title: 'Test News Article',
         news: 'This is a test news article content.',
+        article:"article",
         source: 'Test Source',
         createdAt: Date.now(),
       }),
@@ -34,6 +35,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e4',
         title: 'Test News Article 1',
+        article:"article1",
         news: 'This is test news article 1 content.',
         source: 'Test Source 1',
         createdAt: Date.now(),
@@ -41,6 +43,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e5',
         title: 'Test News Article 2',
+        article:"article2",
         news: 'This is test news article 2 content.',
         source: 'Test Source 2',
         createdAt: Date.now(),
@@ -55,6 +58,7 @@ describe('Integration tests for routes', () => {
       _id: '60b7e8d2a08cf558e04966e4',
       title: 'Test News Article',
       news: 'This is a test news article content.',
+      article:"article",
       source: 'Test Source',
       createdAt: Date.now(),
     });
@@ -67,6 +71,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e4',
         title: 'Test News Article 1',
+        article:"article1",
         news: 'This is test news article 1 content.',
         source: 'Test Source 1',
         createdAt: Date.now() - 86400000, // One day ago
@@ -74,6 +79,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e5',
         title: 'Test News Article 2',
+        article:"article2",
         news: 'This is test news article 2 content.',
         source: 'Test Source 2',
         createdAt: Date.now() - 172800000, // Two days ago
