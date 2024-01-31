@@ -6,11 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-// Mocking the mongoose model
 const mongoose = require('mongoose');
-const News = require('../models/EthioNewsModel'); // Assuming your News model is defined in models/News.js
-
-jest.mock('../models/EthioNewsModel'); // Mocking the News model
+const News = require('../models/EthioNewsModel'); 
+jest.mock('../models/EthioNewsModel');
 
 describe('Integration tests for routes', () => {
   afterEach(() => {
@@ -28,7 +26,7 @@ describe('Integration tests for routes', () => {
       }),
     }));
 
-    // Test implementation
+   
   });
 
   it('GET /news should retrieve all news articles', async () => {
@@ -49,7 +47,7 @@ describe('Integration tests for routes', () => {
       },
     ]);
 
-    // Test implementation
+    
   });
 
   it('GET /news/:title should retrieve a specific news article by title', async () => {
@@ -61,7 +59,7 @@ describe('Integration tests for routes', () => {
       createdAt: Date.now(),
     });
 
-    // Test implementation
+    
   });
 
   it('GET /news/createdAt/past-two-days should retrieve news articles created in the past two days', async () => {
@@ -82,6 +80,6 @@ describe('Integration tests for routes', () => {
       },
     ]);
 
-    // Test implementation
+    
   });
 });
