@@ -6,6 +6,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const UserModel = require('../models/usermodel');
+const mongoose = require('mongoose')
 
 // Passport Google OAuth Strategy
 passport.use(
@@ -143,7 +144,25 @@ router.get(
         failureRedirect: 'http://localhost:3000/post.html',
     })
 );
+router.get('/user/:userId', async (req, res) => {
+    const { userId } = req.params;   
+    try {
+        const user = await UserModel.findOne({ userId });
+        
+        if (user) {
+            const { password, ...userData } = user.toObject();
 
+            return res.status(200).json({ success: true, user: userData });}else{
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Omit sensitive fields like password before sending user data
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 // Route for updating user account
 router.put('/update', async (req, res) => {
     const { name, age, gender, address, username, email } = req.body;
