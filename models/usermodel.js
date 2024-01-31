@@ -9,8 +9,7 @@ const UserSchema = new mongoose.Schema({
     username:{type: String},
     password:{type: String},
     googleId:{type:String},
-    role: { type: String,},
-
+    role: { type: String},
 });
 const UserModel = mongoose.model('users',UserSchema)
 module.exports = UserModel;

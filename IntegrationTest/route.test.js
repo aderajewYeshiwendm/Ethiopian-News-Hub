@@ -6,11 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-// Mocking the mongoose model
 const mongoose = require('mongoose');
-const News = require('../models/EthioNewsModel'); // Assuming your News model is defined in models/News.js
-
-jest.mock('../models/EthioNewsModel'); // Mocking the News model
+const News = require('../models/EthioNewsModel'); 
+jest.mock('../models/EthioNewsModel');
 
 describe('Integration tests for routes', () => {
   afterEach(() => {
@@ -23,12 +21,13 @@ describe('Integration tests for routes', () => {
         _id: '60b7e8d2a08cf558e04966e4', // Mocked ObjectId
         title: 'Test News Article',
         news: 'This is a test news article content.',
+        article:"article",
         source: 'Test Source',
         createdAt: Date.now(),
       }),
     }));
 
-    // Test implementation
+   
   });
 
   it('GET /news should retrieve all news articles', async () => {
@@ -36,6 +35,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e4',
         title: 'Test News Article 1',
+        article:"article1",
         news: 'This is test news article 1 content.',
         source: 'Test Source 1',
         createdAt: Date.now(),
@@ -43,13 +43,14 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e5',
         title: 'Test News Article 2',
+        article:"article2",
         news: 'This is test news article 2 content.',
         source: 'Test Source 2',
         createdAt: Date.now(),
       },
     ]);
 
-    // Test implementation
+    
   });
 
   it('GET /news/:title should retrieve a specific news article by title', async () => {
@@ -57,11 +58,12 @@ describe('Integration tests for routes', () => {
       _id: '60b7e8d2a08cf558e04966e4',
       title: 'Test News Article',
       news: 'This is a test news article content.',
+      article:"article",
       source: 'Test Source',
       createdAt: Date.now(),
     });
 
-    // Test implementation
+    
   });
 
   it('GET /news/createdAt/past-two-days should retrieve news articles created in the past two days', async () => {
@@ -69,6 +71,7 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e4',
         title: 'Test News Article 1',
+        article:"article1",
         news: 'This is test news article 1 content.',
         source: 'Test Source 1',
         createdAt: Date.now() - 86400000, // One day ago
@@ -76,12 +79,13 @@ describe('Integration tests for routes', () => {
       {
         _id: '60b7e8d2a08cf558e04966e5',
         title: 'Test News Article 2',
+        article:"article2",
         news: 'This is test news article 2 content.',
         source: 'Test Source 2',
         createdAt: Date.now() - 172800000, // Two days ago
       },
     ]);
 
-    // Test implementation
+    
   });
 });

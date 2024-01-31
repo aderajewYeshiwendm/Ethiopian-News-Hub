@@ -163,6 +163,29 @@ router.get('/user/:userId', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+router.delete('/user/:userId', async (req, res) => {
+    const { userId } = req.params;   
+    try {
+        // Find the user by userId
+        const user = await UserModel.findOne({ userId });
+        
+        if (user) {
+            // Delete the user from the database
+            await UserModel.deleteOne({ userId });
+            
+            return res.status(200).json({ success: true, message: 'User deleted successfully' });
+        } else {
+            // If user not found, return 404 Not Found status
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        // If an error occurs during deletion, return 500 Internal Server Error status
+        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 // Route for updating user account
 router.put('/update', async (req, res) => {
     const { name, age, gender, address, username, email } = req.body;
