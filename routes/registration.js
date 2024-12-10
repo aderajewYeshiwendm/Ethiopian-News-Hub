@@ -192,7 +192,7 @@ router.put('/update', async (req, res) => {
     return autoSave({ name, age, gender, address, username, email }, res, 'update');
 });
 
-// Export necessary functions and router
+
 module.exports.CheckEmail = CheckEmail;
 module.exports.router = router;
 module.exports.autoSave = autoSave;
