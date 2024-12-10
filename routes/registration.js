@@ -156,7 +156,7 @@ router.get('/user/:userId', async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Omit sensitive fields like password before sending user data
+       
         
     } catch (error) {
         console.error(error);
