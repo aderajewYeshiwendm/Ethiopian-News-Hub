@@ -6,8 +6,6 @@ export default function Entry(){
         article:"",
         title:"",
         source:""
-        
-
     })
     const handleChange = (e) =>{
         setPostNews(prev=>{
@@ -33,7 +31,7 @@ export default function Entry(){
               throw new Error("Failed to submit post");
             }
            console.log(postNews)
-            alert("post submitted successfully!"); // Optional: Show a success message
+            alert("post submitted successfully!"); 
             setPostNews({
                 news: "",
                 article: "",
@@ -43,25 +41,10 @@ export default function Entry(){
               });
           } catch (error) {
             console.error("Error submitting pst:", error.message);
-            alert("Failed to submit post. Please try again later."); // Optional: Show an error message
+            alert("Failed to submit post. Please try again later."); // 
           }
         
-        
-        // const notificationResponse = await fetch("http://localhost:3000/notify-users", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json"
-        //     },
-        //     body: JSON.stringify({
-        //       title: postNews.title,
-        //       category: postNews.category
-        //     })
-        //   });
     
-        //   if (!notificationResponse.ok) {
-        //     throw new Error("Failed to send notifications");
-        //   }
-        // }
     }
     return (
         <>

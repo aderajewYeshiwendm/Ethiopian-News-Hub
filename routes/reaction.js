@@ -18,7 +18,7 @@ router.post('/news/comment', async (req, res) => {
         const { userId, newsId, comment } = req.body;
         const reaction = new ReactionModel({ userId, newsId, action: 'Comment', comment });
         await reaction.save();
-        res.json({ comment: 'Comment posted successfully' });
+        res.json({ comment: 'comment posted successfully' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

@@ -38,7 +38,7 @@ export default function AdminLogin(){
                     <input type="password" id="password" name="password" value={adminInfo.password} onChange={handleChange} required />
                 </div>
                 <div className="login">
-                    <button className="login_btn" type="submit"><a href="article_entry.html" className="login_link">Login</a></button>   
+                    <button className="login_btn" type="submit"><a href="" className="login_link">Login</a></button>   
                 </div>
             </form>
         </div>

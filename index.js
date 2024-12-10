@@ -9,6 +9,9 @@ const rooter = require('./routes/route').router;
 const path = require('path');
 const app = express();
 const PORT = 3000;
+// how to use cors
+const cors = require('cors');
+app.use(cors());
 require('dotenv').config()
 
 app.use(express.static(path.join(__dirname, 'public')));

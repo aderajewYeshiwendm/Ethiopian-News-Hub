@@ -1,35 +1,3 @@
-// import React from "react"
-// import { NavLink } from "react-router-dom"
-// import Search from "./search"
-// export default function Header(){
-  
-//           return (
-//             <>
-//             <nav className="navigation">
-//         <img id="logo" src="src\image\News--HUB.png" alt="ethiopian news hub logo" />
-//         <ul className="nav">
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }  to="/">Home</NavLink> </li>
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }   to="/ethiopianNews">Ethiopian News</NavLink></li>
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }   to="/world">World</NavLink></li>
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }   to="/entertainmentNews">Entertainment</NavLink></li>
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }   to="/sport">Sports</NavLink></li>
-//           <li className="nav_items"><NavLink className={({isActive}) => isActive ? "my-link" : null }   to="/businessNews">Business</NavLink></li>
-
-//         </ul>
-//         <div className="search_user">
-//           <div className="search" >
-//           <i className="fas fa-search"></i>
-//         </div>
-//         <div  className="user">
-//         <i className="fas fa-user"></i>
-
-          
-//         </div>
-//         </div>
-//       </nav>
-//             </>
-//           )
-// } 
 
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
